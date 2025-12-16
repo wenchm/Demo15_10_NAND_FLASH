@@ -26,7 +26,6 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "nand_flash.h"
-#include "nand_func.h"
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -177,7 +176,7 @@ void SystemClock_Config(void)
 void FSMC_NAND_Test(void)
 {
   //logic drive mapped to physic drive
-  NAND_AddressTypeDef addr ={	//初始化
+  NAND_AddressTypeDef addr ={	//初始�?
 		  addr.Page =0,
   	  	  addr.Plane =0,
   	  	  addr.Block =0

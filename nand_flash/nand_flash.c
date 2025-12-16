@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "nand_flash.h"
-#include "nand_func.h"
+
 
 /* Private function declaration for Nand Flash */
 extern void FSMC_NAND_Test(void);

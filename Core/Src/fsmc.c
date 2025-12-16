@@ -62,14 +62,14 @@ void MX_FSMC_Init(void)
   hnand1.Config.ExtraCommandEnable = ENABLE;
   /* ComSpaceTiming */
   ComSpaceTiming.SetupTime = 50;
-  ComSpaceTiming.WaitSetupTime = 200;
+  ComSpaceTiming.WaitSetupTime = 50;
   ComSpaceTiming.HoldSetupTime = 50;
-  ComSpaceTiming.HiZSetupTime = 200;
+  ComSpaceTiming.HiZSetupTime = 50;
   /* AttSpaceTiming */
   AttSpaceTiming.SetupTime = 50;
-  AttSpaceTiming.WaitSetupTime = 200;
+  AttSpaceTiming.WaitSetupTime = 50;
   AttSpaceTiming.HoldSetupTime = 50;
-  AttSpaceTiming.HiZSetupTime = 39;
+  AttSpaceTiming.HiZSetupTime = 50;
 
   if (HAL_NAND_Init(&hnand1, &ComSpaceTiming, &AttSpaceTiming) != HAL_OK)
   {

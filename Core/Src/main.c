@@ -176,7 +176,7 @@ void SystemClock_Config(void)
 void FSMC_NAND_Test(void)
 {
   //logic drive mapped to physic drive
-  NAND_AddressTypeDef addr ={	//初始�?
+  NAND_AddressTypeDef addr ={	//初始�?
 		  addr.Page =0,
   	  	  addr.Plane =0,
   	  	  addr.Block =0

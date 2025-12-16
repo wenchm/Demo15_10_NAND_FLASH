@@ -37,17 +37,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_rnglists 000006b9  00000000  00000000  00013410  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00121e30  00000000  00000000  00013ac9  2**0
+ 17 .debug_macro  00121e26  00000000  00000000  00013ac9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0000cd23  00000000  00000000  001358f9  2**0
+ 18 .debug_line   0000cd14  00000000  00000000  001358ef  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    004dc7bd  00000000  00000000  0014261c  2**0
+ 19 .debug_str    004dc7ae  00000000  00000000  00142603  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000043  00000000  00000000  0061edd9  2**0
+ 20 .comment      00000043  00000000  00000000  0061edb1  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  00002aac  00000000  00000000  0061ee1c  2**2
+ 21 .debug_frame  00002aac  00000000  00000000  0061edf4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_line_str 00000072  00000000  00000000  006218c8  2**0
+ 22 .debug_line_str 00000072  00000000  00000000  006218a0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -530,27 +530,27 @@ void MX_FSMC_Init(void)
   ComSpaceTiming.SetupTime = 50;
  8000620:	2332      	movs	r3, #50	@ 0x32
  8000622:	613b      	str	r3, [r7, #16]
-  ComSpaceTiming.WaitSetupTime = 200;
- 8000624:	23c8      	movs	r3, #200	@ 0xc8
+  ComSpaceTiming.WaitSetupTime = 50;
+ 8000624:	2332      	movs	r3, #50	@ 0x32
  8000626:	617b      	str	r3, [r7, #20]
   ComSpaceTiming.HoldSetupTime = 50;
  8000628:	2332      	movs	r3, #50	@ 0x32
  800062a:	61bb      	str	r3, [r7, #24]
-  ComSpaceTiming.HiZSetupTime = 200;
- 800062c:	23c8      	movs	r3, #200	@ 0xc8
+  ComSpaceTiming.HiZSetupTime = 50;
+ 800062c:	2332      	movs	r3, #50	@ 0x32
  800062e:	61fb      	str	r3, [r7, #28]
   /* AttSpaceTiming */
   AttSpaceTiming.SetupTime = 50;
  8000630:	2332      	movs	r3, #50	@ 0x32
  8000632:	603b      	str	r3, [r7, #0]
-  AttSpaceTiming.WaitSetupTime = 200;
- 8000634:	23c8      	movs	r3, #200	@ 0xc8
+  AttSpaceTiming.WaitSetupTime = 50;
+ 8000634:	2332      	movs	r3, #50	@ 0x32
  8000636:	607b      	str	r3, [r7, #4]
   AttSpaceTiming.HoldSetupTime = 50;
  8000638:	2332      	movs	r3, #50	@ 0x32
  800063a:	60bb      	str	r3, [r7, #8]
-  AttSpaceTiming.HiZSetupTime = 39;
- 800063c:	2327      	movs	r3, #39	@ 0x27
+  AttSpaceTiming.HiZSetupTime = 50;
+ 800063c:	2332      	movs	r3, #50	@ 0x32
  800063e:	60fb      	str	r3, [r7, #12]
 
   if (HAL_NAND_Init(&hnand1, &ComSpaceTiming, &AttSpaceTiming) != HAL_OK)
@@ -1077,7 +1077,7 @@ void FSMC_NAND_Test(void)
  8000972:	b084      	sub	sp, #16
  8000974:	af02      	add	r7, sp, #8
   //logic drive mapped to physic drive
-  NAND_AddressTypeDef addr ={	//初始化
+  NAND_AddressTypeDef addr ={	//初始�?
 		  addr.Page =0,
  8000976:	2300      	movs	r3, #0
  8000978:	f507 52c0 	add.w	r2, r7, #6144	@ 0x1800
@@ -1086,7 +1086,7 @@ void FSMC_NAND_Test(void)
  8000982:	f507 53c0 	add.w	r3, r7, #6144	@ 0x1800
  8000986:	f103 0308 	add.w	r3, r3, #8
  800098a:	881b      	ldrh	r3, [r3, #0]
-  NAND_AddressTypeDef addr ={	//初始化
+  NAND_AddressTypeDef addr ={	//初始�?
  800098c:	f507 52c0 	add.w	r2, r7, #6144	@ 0x1800
  8000990:	f102 0208 	add.w	r2, r2, #8
  8000994:	8013      	strh	r3, [r2, #0]
@@ -1098,7 +1098,7 @@ void FSMC_NAND_Test(void)
  80009a2:	f507 53c0 	add.w	r3, r7, #6144	@ 0x1800
  80009a6:	f103 030a 	add.w	r3, r3, #10
  80009aa:	881b      	ldrh	r3, [r3, #0]
-  NAND_AddressTypeDef addr ={	//初始化
+  NAND_AddressTypeDef addr ={	//初始�?
  80009ac:	f507 52c0 	add.w	r2, r7, #6144	@ 0x1800
  80009b0:	f102 020a 	add.w	r2, r2, #10
  80009b4:	8013      	strh	r3, [r2, #0]
@@ -1110,7 +1110,7 @@ void FSMC_NAND_Test(void)
  80009c2:	f507 53c0 	add.w	r3, r7, #6144	@ 0x1800
  80009c6:	f103 030c 	add.w	r3, r3, #12
  80009ca:	881b      	ldrh	r3, [r3, #0]
-  NAND_AddressTypeDef addr ={	//初始化
+  NAND_AddressTypeDef addr ={	//初始�?
  80009cc:	f507 52c0 	add.w	r2, r7, #6144	@ 0x1800
  80009d0:	f102 020c 	add.w	r2, r2, #12
  80009d4:	8013      	strh	r3, [r2, #0]

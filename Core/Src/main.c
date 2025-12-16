@@ -25,6 +25,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "nand_flash.h"
+#include "nand_func.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,6 +95,25 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   printf("Test NAND FLASH R/W.\n\r");
+
+  HAL_NAND_StateTypeDef sta;	//0=reset,1=ready,2=busy,3=error
+  sta = HAL_NAND_GetState(&hnand1);
+  if(sta ==0)
+	  printf("Nand Flash status is reset.\n\r");
+  else if(sta ==1)
+  	  printf("Nand Flash status is ready.\n\r");
+  else if(sta ==2)
+  	  printf("Nand Flash status is busy.\n\r");
+  else if(sta ==3)
+  	  printf("Nand Flash status is error.\n\r");
+
+  printf("Nand Flash pagesize = %ld\n",hnand1.Config.PageSize);
+  printf("Nand Flash SpareAreaSize = %ld\n",hnand1.Config.SpareAreaSize);
+  printf("Nand Flash PlaneSize = %ld\n",hnand1.Config.PlaneSize);
+  printf("Nand Flash BlockSize = %ld\n",hnand1.Config.BlockSize);
+  printf("Nand Flash BlockNbr = %ld\n",hnand1.Config.BlockNbr);
+  printf("Nand Flash PlaneNbr = %ld\n\r",hnand1.Config.PlaneNbr);
+
   FSMC_NAND_Test();
   /* USER CODE END 2 */
 
@@ -154,55 +176,145 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void FSMC_NAND_Test(void)
 {
-	HAL_NAND_StateTypeDef sta;	//0=reset,1=ready,2=busy,3=error
-	sta = HAL_NAND_GetState(&hnand1);
-	printf("Nand Flash status = %d\n\r",sta);
+  //logic drive mapped to physic drive
+  NAND_AddressTypeDef addr ={	//初始化
+		  addr.Page =0,
+  	  	  addr.Plane =0,
+  	  	  addr.Block =0
+  	  	  };
+  addr.Page = FLASH_PAGE_63;
+  addr.Plane= FLASH_PLANE_0;
+  addr.Block= FLASH_BLOCK_1023;
 
-	printf("Nand Flash pagesize = %ld\n\r",hnand1.Config.PageSize);
-	printf("Nand Flash SpareAreaSize = %ld\n\r",hnand1.Config.SpareAreaSize);
-	printf("Nand Flash PlaneSize = %ld\n\r",hnand1.Config.PlaneSize);
-	printf("Nand Flash BlockSize = %ld\n\r",hnand1.Config.BlockSize);
-	printf("Nand Flash BlockNbr = %ld\n\r",hnand1.Config.BlockNbr);
-	printf("Nand Flash PlaneNbr = %ld\n\r",hnand1.Config.PlaneNbr);
+  *(uint32_t*)((uint32_t)(addr.Page)) =ADDR_FLASH_PAGE_63;
+  *(uint32_t*)((uint32_t)(addr.Plane)) =ADDR_FLASH_PLANE_0;
+  *(uint32_t*)((uint32_t)(addr.Block)) =ADDR_FLASH_BLOCK_1023;
 
-	NAND_AddressTypeDef addr ={0,0,0};
-	HAL_StatusTypeDef st = HAL_NAND_Erase_Block(&hnand1, &addr);
-	HAL_Delay(3000);
-	if(st == 0)
-		printf("Erase_Block is OK\n\r");
+//  *(uint32_t*)((uint32_t)(FLASH_BLOCK_0)) =ADDR_FLASH_BLOCK_0;
 
-	NAND_IDTypeDef info;
-	HAL_NAND_Reset(&hnand1);
-	HAL_Delay(500);
-	HAL_NAND_Read_ID(&hnand1, &info);
-	printf("Nand Flash ID = %02X-%02X-%02X-%02X\n\r",info.Maker_Id, info.Device_Id,info.Third_Id,info.Fourth_Id);
+  //test erase a block
+  printf("test erase a block.\r\n");
+  HAL_StatusTypeDef ret = HAL_NAND_Erase_Block(&hnand1, &addr);
+  if(ret ==0)
+	  printf("erase block is HAL_OK.\n\r");
+  else if(ret ==1)
+	  printf("erase block is HAL_ERROR.\n\r");
+  else if(ret ==2)
+	  printf("erase block is HAL_BUSY.\n\r");
+  else if(ret ==3)
+	  printf("erase block is HAL_TIMEOUT.\n\r");
 
-	uint32_t memory_sta;
-	memory_sta = HAL_NAND_Read_Status(&hnand1);
-	printf("Nand Flash memory status = %lx\n\r",memory_sta);
+  // test Reset
+  HAL_StatusTypeDef ret1 =HAL_NAND_Reset(&hnand1);	// all bit set 0xFF
+  if(ret1 ==0)
+	  printf("Nand Flash reset is HAL_OK.\n\r");
+  else if(ret1 ==1)
+  	  printf("Nand Flash reset is HAL_ERROR.\n\r");
+  else if(ret1 ==2)
+  	  printf("Nand Flash reset is HAL_BUSY.\n\r");
+  else if(ret1 ==3)
+  	  printf("Nand Flash reset is HAL_TIMEOUT.\n\r");
+  HAL_Delay(500);
 
-	uint8_t buffer_write[2 * 1024];
-	for(int i = 1; i <= 2048; i++)
-	{
-		buffer_write[i] = i;
-	}
-	HAL_StatusTypeDef ret = HAL_NAND_Write_Page_8b(&hnand1, &addr, buffer_write, 1);
-	if(ret == 0)
-		printf("write OK\n\r");
+  // test READ_ID
+  NAND_IDTypeDef info;
+  HAL_StatusTypeDef ret2 =HAL_NAND_Read_ID(&hnand1, &info);
+  if(ret2 ==0)
+	  printf("Nand Flash Read_ID is HAL_OK.\n");
+  else if(ret2 ==1)
+  	  printf("Nand Flash Read_ID is HAL_ERROR.\n");
+  else if(ret2 ==2)
+  	  printf("Nand Flash Read_ID is HAL_BUSY.\n");
+  else if(ret2 ==3)
+  	  printf("Nand Flash Read_ID is HAL_TIMEOUT.\n");
 
-	uint8_t buffer[2 * 1024] = {0};
-	HAL_StatusTypeDef ret1 = HAL_NAND_Read_Page_8b(&hnand1, &addr, buffer, 1);
-	if(ret1 == 0)
-	{
-		printf("read OK\n\r");
-		for(int i = 1; i <= 64; i++)
-		{
-			if((i % 16) != 0)
-				printf("%02d,",buffer[i]);
-			else
-				printf("%02d,\r\n",buffer[i]);
-		}
-	}
+  printf("Nand Flash ID = %02X-%02X-%02X-%02X\n\r",info.Maker_Id, info.Device_Id,info.Third_Id,info.Fourth_Id);
+
+  //test memory Read_Status
+/**
+  * @brief NAND memory status
+  * NAND_VALID_ADDRESS         0x00000100UL
+  * NAND_INVALID_ADDRESS       0x00000200UL
+  * NAND_TIMEOUT_ERROR         0x00000400UL
+  * NAND_BUSY                  0x00000000UL
+  * NAND_ERROR                 0x00000001UL
+  * NAND_READY                 0x00000040UL
+  */
+/**
+  * @brief  NAND memory read status
+  * @param  hnand pointer to a NAND_HandleTypeDef structure that contains
+  *                the configuration information for NAND module.
+  * @retval NAND status
+  */
+  uint32_t sta = HAL_NAND_Read_Status(&hnand1);
+  if(sta ==0x00000100UL)
+	  printf("NAND memory read status is NAND_VALID_ADDRESS.\r\n");
+  else if(sta ==0x00000200UL)
+	  printf("NAND memory read status is NAND_INVALID_ADDRESS.\r\n");
+  else if(sta ==0x00000400UL)
+	  printf("NAND memory read status is NAND_TIMEOUT_ERROR.\r\n");
+  else if(sta ==0x00000000UL)
+	  printf("NAND memory read status is NAND_BUSY.\r\n");
+  else if(sta ==0x00000001UL)
+	  printf("NAND memory read status is NAND_ERROR.\r\n");
+  else if(sta ==0x00000040UL)
+	  printf("NAND memory read status is NAND_READY.\r\n");
+
+  printf("\r\n");
+  //test write
+  uint8_t buffer_write[2048];
+  for(int i = 0; i < 2048; i++)
+  {
+	  buffer_write[i] = (uint8_t)i;
+  }
+
+  //Write into page 63 of the {63,0,1023} defined above.
+  HAL_StatusTypeDef ret3 = HAL_NAND_Write_Page_8b(&hnand1, &addr, buffer_write, 1);
+  if(ret3 == 0)
+	  printf("write natural numbers into a page is HAL_OK。\r\n");
+  else if(ret3 == 1)
+	  printf("write natural numbers into a page is HAL_ERROR。\r\n");
+  else if(ret3 == 2)
+	  printf("write natural numbers into a page is HAL_BUSY。\r\n");
+  else if(ret3 == 3)
+	  printf("write natural numbers into a page is HAL_TIMEOUT。\r\n");
+
+  printf("\r\n");
+
+  //test read
+  uint8_t buffer1[2048];
+  memset(buffer1, 0, 2048);
+  HAL_StatusTypeDef ret4 = HAL_NAND_Read_Page_8b(&hnand1, &addr, buffer1, 1);
+  if(ret4 == 0)
+  {
+	  printf("Read a written page, each byte shows natural numbers.\r\n");
+	  for(int i = 0; i < 64; i++)
+	  {
+		  printf("%02X,",buffer1[i]);
+	  }
+	  printf("\r\n");
+  }
+  printf("\r\n");
+
+  uint8_t buffer[2048];
+  addr.Page = 1;
+  addr.Plane= 0;
+  addr.Block= 1;
+  *(uint32_t*)((uint32_t)(addr.Page)) =ADDR_FLASH_PAGE_1;
+  *(uint32_t*)((uint32_t)(addr.Plane)) =ADDR_FLASH_PLANE_0;
+  *(uint32_t*)((uint32_t)(addr.Block)) =ADDR_FLASH_BLOCK_1;
+  memset(buffer, 0, 2048);
+  HAL_StatusTypeDef ret5 = HAL_NAND_Read_Page_8b(&hnand1, &addr, buffer, 1);
+  if(ret5 == 0)
+  {
+	  printf("Read a page that has not been written, each byte shows 0xFF.\r\n");
+	  for(int i = 0; i < 64; i++)
+	  {
+		  printf("%02X,",buffer[i]);
+	  }
+	  printf("\r\n");
+  }
+
 }
 
 
